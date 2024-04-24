@@ -18,7 +18,7 @@ from django.urls import path
 from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
-from .views import MovieListCreate, MovieRetrieveUpdateDestroy
+from .views import MovieListCreate, MovieRetrieveUpdateDestroy, CategoryCreate, MovieCategories, CategoryMovies, MovieSearch
 from django.contrib import admin
 from django.urls import path, include
 from django.views.generic import TemplateView
@@ -58,4 +58,8 @@ urlpatterns = [
     path('api/movies/', MovieListCreate.as_view(), name='movie-list-create'),
     # Suppression , GetById et modification des movies
     path('api/movies/<int:pk>/', MovieRetrieveUpdateDestroy.as_view(), name='movie-retrieve-update-destroy'),
+    path('api/movies/search/', MovieSearch.as_view(), name='movie-search'),
+    path('api/categories/', CategoryCreate.as_view(), name='category-create'),
+    path('api/movies/<int:pk>/categories/', MovieCategories.as_view(), name='movie-categories'),
+    path('api/categories/<int:pk>/movies/', CategoryMovies.as_view(), name='category-movies'),
 ]

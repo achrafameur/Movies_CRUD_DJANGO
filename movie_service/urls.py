@@ -57,7 +57,7 @@ urlpatterns = [
     # # Ajout et Récupération des movies
     # path('api/movies/', MovieListCreate.as_view(), name='movie-list-create'),
     # # Suppression , GetById et modification des movies
-    # path('api/movies/<int:pk>/', MovieRetrieveUpdateDestroy.as_view(), name='movie-retrieve-update-destroy'),
+    # path('api/movies/<int:pk>/', MovieRetrieveUpdateDestroy.as_view(), name='movie-retrieve-upwdate-destroy'),
     path('api/movies/', MovieList.as_view(), name='movie-list'),
     path('api/movies/create/', MovieList.as_view(), name='movie-create'),
     path('api/movies/detail/', MovieDetail.as_view(), name='movie-detail'),
@@ -67,4 +67,7 @@ urlpatterns = [
     path('api/categories/', CategoryCreate.as_view(), name='category-create'),
     path('api/movies/<int:pk>/categories/', MovieCategories.as_view(), name='movie-categories'),
     path('api/categories/<int:pk>/movies/', CategoryMovies.as_view(), name='category-movies'),
+
+
+    path('api/auth/', include('custom_auth.urls')),
 ]

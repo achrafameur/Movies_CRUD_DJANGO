@@ -37,20 +37,68 @@ class MovieList(APIView):
             return Response(serializer.data, status=201)
         return Response(serializer.errors, status=400)
 
-class MovieDetail(APIView):
+# class MovieDetail(APIView):
+#     def get(self, request):
+#         try:
+#             movie_id = int(request.data.get('id'))
+#             movie = Movie.objects.get(pk=movie_id)
+#             serializer = MovieSerializer(movie)
+#             return Response(serializer.data, status=status.HTTP_200_OK)
+#         except Exception as e:
+#             return Response("Error: {}".format(str(e)), status=status.HTTP_400_BAD_REQUEST)
+
+#     def put(self, request):
+#         try:
+#             movie_id = int(request.data.get('id'))
+#             movie = Movie.objects.get(pk=movie_id)
+#             serializer = MovieSerializer(movie, data=request.data)
+#             if serializer.is_valid():
+#                 serializer.save()
+#                 return Response(serializer.data, status=status.HTTP_200_OK)
+#             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+#         except Movie.DoesNotExist:
+#             return Response("Movie not found", status=status.HTTP_404_NOT_FOUND)
+#         except Exception as e:
+#             return Response("Error: {}".format(str(e)), status=status.HTTP_400_BAD_REQUEST)
+
+#     def delete(self, request):
+#         try:
+#             movie_id = int(request.data.get('id'))
+#             movie = Movie.objects.get(pk=movie_id)
+#             movie.delete()
+#             return Response("Movie deleted successfully", status=status.HTTP_204_NO_CONTENT)
+#         except Movie.DoesNotExist:
+#             return Response("Movie not found", status=status.HTTP_404_NOT_FOUND)
+#         except Exception as e:
+#             return Response("Error: {}".format(str(e)), status=status.HTTP_400_BAD_REQUEST)
+
+class MovieList(APIView):
     def get(self, request):
+        # Récupérer tous les films
+        movies = Movie.objects.all()
+        serializer = MovieSerializer(movies, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        # Créer un nouveau film
+        serializer = MovieSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=201)
+        return Response(serializer.errors, status=400)
+
+class MovieDetail(APIView):
+    def get(self, request, uid):
         try:
-            movie_id = int(request.data.get('id'))
-            movie = Movie.objects.get(pk=movie_id)
+            movie = Movie.objects.get(pk=uid)
             serializer = MovieSerializer(movie)
             return Response(serializer.data, status=status.HTTP_200_OK)
-        except Exception as e:
-            return Response("Error: {}".format(str(e)), status=status.HTTP_400_BAD_REQUEST)
+        except Movie.DoesNotExist:
+            return Response("Movie not found", status=status.HTTP_404_NOT_FOUND)
 
-    def put(self, request):
+    def put(self, request, uid):
         try:
-            movie_id = int(request.data.get('id'))
-            movie = Movie.objects.get(pk=movie_id)
+            movie = Movie.objects.get(pk=uid)
             serializer = MovieSerializer(movie, data=request.data)
             if serializer.is_valid():
                 serializer.save()
@@ -58,19 +106,14 @@ class MovieDetail(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except Movie.DoesNotExist:
             return Response("Movie not found", status=status.HTTP_404_NOT_FOUND)
-        except Exception as e:
-            return Response("Error: {}".format(str(e)), status=status.HTTP_400_BAD_REQUEST)
 
-    def delete(self, request):
+    def delete(self, request, uid):
         try:
-            movie_id = int(request.data.get('id'))
-            movie = Movie.objects.get(pk=movie_id)
+            movie = Movie.objects.get(pk=uid)
             movie.delete()
             return Response("Movie deleted successfully", status=status.HTTP_204_NO_CONTENT)
         except Movie.DoesNotExist:
             return Response("Movie not found", status=status.HTTP_404_NOT_FOUND)
-        except Exception as e:
-            return Response("Error: {}".format(str(e)), status=status.HTTP_400_BAD_REQUEST)
 
 class MovieCategories(generics.RetrieveAPIView):
     queryset = Movie.objects.all()

@@ -54,15 +54,12 @@ urlpatterns = [
         name="redoc",
     ),
     path('admin/', admin.site.urls),
-    # # Ajout et Récupération des movies
-    # path('api/movies/', MovieListCreate.as_view(), name='movie-list-create'),
-    # # Suppression , GetById et modification des movies
-    # path('api/movies/<int:pk>/', MovieRetrieveUpdateDestroy.as_view(), name='movie-retrieve-upwdate-destroy'),
     path('api/movies/', MovieList.as_view(), name='movie-list'),
     path('api/movies/create/', MovieList.as_view(), name='movie-create'),
-    path('api/movies/detail/', MovieDetail.as_view(), name='movie-detail'),
-    path('api/movies/update/', MovieDetail.as_view(), name='movie-update'),
-    path('api/movies/delete/', MovieDetail.as_view(), name='movie-delete'),
+    path('api/movies/<int:uid>/', MovieDetail.as_view(), name='movie-detail'),  # GET, PUT, DELETE /movies/{uid}
+    # path('api/movies/detail/', MovieDetail.as_view(), name='movie-detail'),
+    # path('api/movies/update/', MovieDetail.as_view(), name='movie-update'),
+    # path('api/movies/delete/', MovieDetail.as_view(), name='movie-delete'),
     path('api/movies/search/', MovieSearch.as_view(), name='movie-search'),
     path('api/categories/', CategoryCreate.as_view(), name='category-create'),
     path('api/movies/<int:pk>/categories/', MovieCategories.as_view(), name='movie-categories'),

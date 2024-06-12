@@ -18,7 +18,8 @@ from django.urls import path
 from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
-from .views import MovieDetail, MovieList, CategoryCreate, MovieCategories, CategoryMovies, MovieSearch
+from .views import MovieDetail, MovieList, CategoryCreate, MovieCategories, CategoryMovies, MovieSearch, CinemaListCreate, CinemaDetail, \
+        RoomListCreate, RoomDetail, SeanceListCreate, SeanceDetail, ReservationListCreate, ReservationConfirm, ReservationDetail
 from django.contrib import admin
 from django.urls import path, include
 from django.views.generic import TemplateView
@@ -54,16 +55,33 @@ urlpatterns = [
         name="redoc",
     ),
     path('admin/', admin.site.urls),
+
+    #CRUD films
     path('api/movies/', MovieList.as_view(), name='movie-list'),
     path('api/movies/create/', MovieList.as_view(), name='movie-create'),
-    path('api/movies/<int:uid>/', MovieDetail.as_view(), name='movie-detail'),  # GET, PUT, DELETE /movies/{uid}
+    # GET, PUT, DELETE /movies/{uid}
+    path('api/movies/<uuid:uid>/', MovieDetail.as_view(), name='movie-detail'),  
     # path('api/movies/detail/', MovieDetail.as_view(), name='movie-detail'),
     # path('api/movies/update/', MovieDetail.as_view(), name='movie-update'),
     # path('api/movies/delete/', MovieDetail.as_view(), name='movie-delete'),
+
+    # Recherche de flims
     path('api/movies/search/', MovieSearch.as_view(), name='movie-search'),
+
     path('api/categories/', CategoryCreate.as_view(), name='category-create'),
     path('api/movies/<int:pk>/categories/', MovieCategories.as_view(), name='movie-categories'),
     path('api/categories/<int:pk>/movies/', CategoryMovies.as_view(), name='category-movies'),
+
+    # Réservation 
+    path('api/cinemas/', CinemaListCreate.as_view(), name='cinema-list-create'),
+    path('api/cinemas/<uuid:uid>/', CinemaDetail.as_view(), name='cinema-detail'),
+    path('api/cinemas/<uuid:cinemaUid>/rooms/', RoomListCreate.as_view(), name='room-list-create'),
+    path('api/cinemas/<uuid:cinemaUid>/rooms/<uuid:uid>/', RoomDetail.as_view(), name='room-detail'),
+    path('api/cinemas/<uuid:cinemaUid>/rooms/<uuid:roomUid>/seances/', SeanceListCreate.as_view(), name='seance-list-create'),
+    path('api/cinemas/<uuid:cinemaUid>/rooms/<uuid:roomUid>/seances/<uuid:uid>/', SeanceDetail.as_view(), name='seance-detail'),
+    path('api/movies/<uuid:movieUid>/reservations/', ReservationListCreate.as_view(), name='reservation-list-create'),
+    path('api/reservations/<uuid:uid>/confirm/', ReservationConfirm.as_view(), name='reservation-confirm'),
+    path('api/reservations/<uuid:uid>/', ReservationDetail.as_view(), name='reservation-detail'),
 
 
     path('api/auth/', include('custom_auth.urls')),

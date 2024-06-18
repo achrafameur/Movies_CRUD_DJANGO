@@ -1,6 +1,6 @@
 Groupe : 
   - Achraf Ameur
   - Semy Trabelsi
-  - Abdelhaq mahmoudi
+  - Abdelhaq Mahmoudi
 
 swagger interface : http://localhost:8000/swagger-ui/

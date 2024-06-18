@@ -1,3 +1,4 @@
+import uuid
 from rest_framework import generics
 from .models import Movie, Category, Cinema, Room, Reservation, Seance
 from .serializers import MovieSerializer, CategorySerializer, RoomSerializer, ReservationSerializer, CinemaSerializer, SeanceSerializer
@@ -7,6 +8,8 @@ from rest_framework.views import APIView
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from datetime import timedelta
+from django.core.mail import send_mail
+from django.conf import settings
 
 class MovieList(APIView):
     def get(self, request):
@@ -130,7 +133,8 @@ class CinemaDetail(APIView):
 
     def delete(self, request, uid):
         try:
-            cinema = Cinema.objects.get(uid=uid)
+            formatted_uid = format_uuid(uid)
+            cinema = Cinema.objects.get(uid=formatted_uid)
             cinema.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
         except Cinema.DoesNotExist:
@@ -197,13 +201,17 @@ class SeanceListCreate(APIView):
 
     def post(self, request, cinemaUid, roomUid):
         try:
-            room = Room.objects.get(uid=roomUid, cinema__uid=cinemaUid)
-            serializer = SeanceSerializer(data=request.data)
-            if serializer.is_valid():
-                serializer.save(room=room)
-                return Response(serializer.data, status=status.HTTP_201_CREATED)
-            return Response(serializer.errors, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
-        except Room.DoesNotExist:
+            room = Room.objects.get(uid=roomUid, cinema__uid=cinemaUid)            
+            serializer = SeanceSerializer(data=request.data)            
+            if serializer.is_valid():                 
+                seance = serializer.save(room=room)                                
+                # Envoi d'un e-mail pour la création de la séance                
+                subject = 'Nouvelle séance créée'                
+                message = 'Une nouvelle séance a été créée pour le film {seance.movie.name}.'                
+                send_mail(subject, message, settings.EMAIL_HOST_USER, ['abdelhaqfiverr@gmail.com']) 
+                return Response(serializer.data, status=status.HTTP_201_CREATED) 
+            return Response(serializer.errors, status=status.HTTP_422_UNPROCESSABLE_ENTITY) 
+        except Room.DoesNotExist: 
             return Response({"detail": "Room not found."}, status=status.HTTP_404_NOT_FOUND)
 
 class SeanceDetail(APIView):
@@ -251,16 +259,19 @@ class ReservationListCreate(APIView):
 
 class ReservationConfirm(APIView):
     def post(self, request, uid):
-        try:
-            reservation = Reservation.objects.get(uid=uid)
-            if reservation.status == 'open':
-                reservation.status = 'confirmed'
-                reservation.save()
-                return Response(status=status.HTTP_200_OK)
-            else:
-                return Response({"detail": "Reservation cannot be confirmed."}, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
-        except Reservation.DoesNotExist:
-            return Response({"detail": "Not found."}, status=status.HTTP_404_NOT_FOUND)
+        try:             
+            reservation = Reservation.objects.get(uid=uid)     
+            if reservation.status == 'open':                 
+                reservation.status = 'confirmed'               
+                reservation.save()                 
+                # Envoi d'un e-mail de confirmation de réservation                
+                subject = 'Confirmation de réservation'                
+                message = f'Votre réservation pour la séance {reservation.seance.uid} a été confirmée.'                
+                send_mail(subject, message, settings.EMAIL_HOST_USER, ['abdelhaqfiverr@gmail.com'])                 
+                return Response(status=status.HTTP_200_OK)             
+            else:                 
+                return Response({"detail": "Reservation cannot be confirmed."}, status=status.HTTP_422_UNPROCESSABLE_ENTITY) 
+        except Reservation.DoesNotExist: return Response({"detail": "Not found."}, status=status.HTTP_404_NOT_FOUND)
 
 class ReservationDetail(APIView):
     def get(self, request, uid):

@@ -11,7 +11,7 @@ class Category(models.Model):
         db_table = 'categories'
         
 class Movie(models.Model):
-    uid = models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True)
+    uid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, max_length=36)
     name = models.CharField(max_length=128)
     description = models.TextField(max_length=4096)
     release_date = models.DateField(auto_now=True, null=True, blank=True)
@@ -28,7 +28,7 @@ class Movie(models.Model):
         db_table = 'movies'
 
 class Cinema(models.Model):
-    uid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    uid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, max_length=36)
     name = models.CharField(max_length=128)
     createdAt = models.DateTimeField(auto_now_add=True) 
 
@@ -39,7 +39,7 @@ class Cinema(models.Model):
         db_table = 'cinemas'
 
 class Room(models.Model):
-    uid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    uid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, max_length=36)
     name = models.CharField(max_length=128)
     seats = models.PositiveIntegerField()
     cinema = models.ForeignKey(Cinema, related_name='rooms', on_delete=models.CASCADE)
@@ -57,7 +57,7 @@ class Reservation(models.Model):
         ('confirmed', 'Confirmed')
     ]
 
-    uid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    uid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, max_length=36)
     rank = models.PositiveIntegerField()
     status = models.CharField(max_length=10, choices=STATUS_CHOICES)
     seats = models.PositiveIntegerField()
@@ -73,7 +73,7 @@ class Reservation(models.Model):
         db_table = 'reservations'
 
 class Seance(models.Model):
-    uid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    uid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, max_length=36)
     movie = models.UUIDField()
     date = models.DateTimeField()
     room = models.ForeignKey(Room, related_name='seances', on_delete=models.CASCADE)
